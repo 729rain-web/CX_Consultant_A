@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Rain Chen｜客服體系重建案例 A版</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;600&family=Noto+Sans+TC:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0F0F0F;--paper:#F7F4EF;--accent:#C84B2F;--accent2:#1A4D6E;--mid:#6B6760;--rule:rgba(15,15,15,0.12);--gold:#B8860B}
+.reveal-viewport{background:var(--paper)}
+.reveal .slides section{text-align:left;padding:0;height:100%}
+.reveal .progress{height:3px;color:var(--accent)}
+.reveal .controls{color:var(--accent)}
+
+/* NAV */
+.top-nav{position:fixed;top:0;left:0;right:0;z-index:9999;display:flex;justify-content:space-between;align-items:center;padding:0.6rem 1.2rem;background:rgba(247,244,239,0.92);backdrop-filter:blur(8px);border-bottom:0.5px solid var(--rule)}
+.nav-brand{font-family:'DM Mono',monospace;font-size:0.7rem;letter-spacing:0.15em;color:var(--mid)}
+.nav-links{display:flex;gap:1rem}
+.nav-link{font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.1em;color:var(--mid);cursor:pointer;text-decoration:none;padding:0.2rem 0;border-bottom:1px solid transparent;transition:border-color 0.2s}
+.nav-link:hover{border-bottom-color:var(--accent);color:var(--ink)}
+.hamburger{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:4px}
+.hamburger span{display:block;width:20px;height:1.5px;background:var(--ink)}
+.mobile-menu{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:var(--paper);z-index:10000;flex-direction:column;padding:2rem 1.5rem}
+.mobile-menu.open{display:flex}
+.mobile-menu-close{font-family:'DM Mono',monospace;font-size:0.7rem;color:var(--mid);cursor:pointer;align-self:flex-end;padding:0.5rem;margin-bottom:1rem}
+.mobile-menu-item{font-family:'Noto Sans TC',sans-serif;font-size:1rem;color:var(--ink);padding:1rem 0;border-bottom:0.5px solid var(--rule);cursor:pointer}
+.mobile-menu-item:hover{color:var(--accent)}
+
+/* SLIDES */
+.sl{display:flex;flex-direction:column;height:100vh;padding:6rem 8vw 3rem;box-sizing:border-box;background:var(--paper);color:var(--ink)}
+.sl.dark{background:var(--ink);color:var(--paper)}
+.sl.blue{background:var(--accent2);color:var(--paper)}
+.sl-eye{font-family:'DM Mono',monospace;font-size:0.62rem;letter-spacing:0.18em;color:var(--mid);margin-bottom:0.4rem}
+.sl.dark .sl-eye,.sl.blue .sl-eye{color:rgba(247,244,239,0.4)}
+.sl-h{font-family:'Noto Serif TC',serif;font-weight:300;font-size:clamp(1.5rem,3.5vw,2.6rem);line-height:1.2;margin:0 0 0.6rem;padding-bottom:0.6rem;border-bottom:1.5px solid var(--accent)}
+.sl.dark .sl-h{color:var(--paper)}
+.sl-body{flex:1;display:flex;flex-direction:column;justify-content:center;gap:0.8rem}
+.mono{font-family:'DM Mono',monospace}
+
+/* COVER */
+.cover-h{font-family:'Noto Serif TC',serif;font-weight:300;font-size:clamp(2rem,5vw,3.8rem);line-height:1.15;color:var(--paper);margin:0 0 1rem}
+.cover-h em{font-style:normal;color:#E07058}
+.cover-sub{font-family:'Noto Sans TC',sans-serif;font-size:clamp(0.8rem,1.5vw,0.95rem);font-weight:300;color:rgba(247,244,239,0.65);line-height:1.7;max-width:500px}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(247,244,239,0.1);margin-top:2rem}
+.metric{padding:0.8rem 0.6rem}
+.metric-n{font-family:'DM Mono',monospace;font-size:clamp(1.4rem,3vw,2rem);color:#E07058;display:block}
+.metric-l{font-family:'Noto Sans TC',sans-serif;font-size:0.7rem;color:rgba(247,244,239,0.4);display:block;margin-top:0.2rem}
+
+/* CARDS */
+.card{background:white;border:0.5px solid var(--rule);border-radius:6px;padding:0.9rem 1rem}
+.card.red{border-left:3px solid var(--accent)}
+.card.gold{border-left:3px solid var(--gold)}
+.card.blue{border-left:3px solid var(--accent2);background:#f0f5f9}
+.card-tag{font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.12em;color:var(--mid);display:block;margin-bottom:0.2rem}
+.card-title{font-family:'Noto Sans TC',sans-serif;font-size:0.88rem;font-weight:500;color:var(--ink);margin:0 0 0.25rem}
+.card-desc{font-family:'Noto Sans TC',sans-serif;font-size:0.77rem;color:var(--mid);line-height:1.6;margin:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0.6rem}
+.grid1{display:grid;grid-template-columns:1fr;gap:0.6rem}
+.arrow-row{text-align:center;font-size:0.75rem;color:var(--mid);padding:0.2rem 0}
+
+/* TIMELINE accordion */
+.timeline{display:flex;flex-direction:column;gap:0.5rem;flex:1;justify-content:center}
+.tl-item{background:white;border:0.5px solid var(--rule);border-radius:6px;overflow:hidden}
+.tl-header{display:flex;align-items:center;gap:1rem;padding:0.9rem 1rem;cursor:pointer;user-select:none}
+.tl-num{font-family:'DM Mono',monospace;font-size:1.8rem;font-weight:500;color:rgba(15,15,15,0.08);min-width:48px}
+.tl-info{flex:1}
+.tl-title{font-family:'Noto Sans TC',sans-serif;font-size:0.9rem;font-weight:500;color:var(--ink);margin:0 0 0.15rem}
+.tl-focus{font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.1em;color:var(--accent)}
+.tl-arrow{font-size:0.75rem;color:var(--mid);transition:transform 0.2s}
+.tl-body{display:none;padding:0 1rem 0.9rem 1rem;border-top:0.5px solid var(--rule)}
+.tl-body.open{display:block}
+.tl-list{list-style:none;margin:0.6rem 0 0;padding:0;display:flex;flex-direction:column;gap:0.4rem}
+.tl-list li{font-family:'Noto Sans TC',sans-serif;font-size:0.8rem;color:var(--mid);padding-left:1rem;position:relative;line-height:1.6}
+.tl-list li::before{content:'—';position:absolute;left:0;color:var(--rule)}
+.tl-list li strong{color:var(--ink);font-weight:500}
+
+/* KB */
+.kb-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;flex:1}
+.kb-tree{display:flex;flex-direction:column;gap:0.4rem}
+.kb-parent{background:var(--ink);color:var(--paper);border-radius:4px;padding:0.6rem 0.9rem;font-family:'Noto Sans TC',sans-serif;font-size:0.82rem;font-weight:500;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.kb-parent:hover{background:var(--accent)}
+.kb-children{display:none;flex-wrap:wrap;gap:0.3rem;padding:0.4rem 0 0.3rem 0.5rem}
+.kb-children.open{display:flex}
+.kb-child{background:white;border:0.5px solid var(--rule);border-radius:3px;padding:0.25rem 0.5rem;font-family:'Noto Sans TC',sans-serif;font-size:0.7rem;color:var(--mid)}
+.kb-child.sp{border-color:var(--gold);color:var(--gold)}
+.kb-child.rk{border-color:var(--accent);color:var(--accent)}
+.kb-stats{display:flex;flex-direction:column;justify-content:center;gap:1rem}
+.kb-stat{border-left:2px solid var(--accent);padding-left:0.9rem}
+.kb-stat-n{font-family:'DM Mono',monospace;font-size:1.8rem;font-weight:500;color:var(--ink)}
+.kb-stat-l{font-family:'Noto Sans TC',sans-serif;font-size:0.78rem;color:var(--mid)}
+.kb-note{border-top:0.5px solid var(--rule);padding-top:0.8rem;font-family:'Noto Sans TC',sans-serif;font-size:0.77rem;color:var(--mid);line-height:1.7}
+
+/* BCP */
+.bcp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.6rem;flex:1;align-content:center}
+.bcp-card{background:white;border:0.5px solid var(--rule);border-radius:6px;padding:0.9rem 1rem;text-align:center}
+.bcp-icon{font-size:1.5rem;display:block;margin-bottom:0.4rem}
+.bcp-title{font-family:'Noto Sans TC',sans-serif;font-size:0.85rem;font-weight:500;color:var(--ink);margin:0 0 0.3rem}
+.bcp-desc{font-family:'Noto Sans TC',sans-serif;font-size:0.75rem;color:var(--mid);line-height:1.6;margin:0}
+
+/* SLIDER */
+.slider-wrap{flex:1;display:flex;flex-direction:column;gap:1rem;justify-content:center}
+.slider-labels{display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:0.7rem;color:var(--mid)}
+.slider-track{position:relative;height:4px;background:var(--rule);border-radius:2px;margin:0.5rem 0}
+input[type=range]{-webkit-appearance:none;width:100%;height:4px;background:transparent;position:absolute;top:0;left:0;cursor:pointer;margin:0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:var(--ink);cursor:pointer;margin-top:-10px;touch-action:manipulation}
+input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:var(--ink);cursor:pointer;border:none}
+.slider-fill{position:absolute;top:0;left:0;height:4px;background:var(--accent);border-radius:2px;pointer-events:none;transition:width 0.1s}
+.results-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0.6rem}
+.res-card{background:white;border:0.5px solid var(--rule);border-radius:6px;padding:0.9rem 1rem;transition:all 0.3s}
+.res-before{font-family:'DM Mono',monospace;font-size:0.65rem;color:var(--mid)}
+.res-val{font-family:'DM Mono',monospace;font-size:clamp(1.6rem,3vw,2.2rem);font-weight:500;color:var(--accent);transition:all 0.3s}
+.res-label{font-family:'Noto Sans TC',sans-serif;font-size:0.78rem;color:var(--mid);margin:0.2rem 0 0}
+.res-detail{font-family:'Noto Sans TC',sans-serif;font-size:0.72rem;color:var(--mid);border-top:0.5px solid var(--rule);padding-top:0.5rem;margin-top:0.5rem;opacity:0;transition:opacity 0.3s}
+
+/* AI TOOL */
+.ai-scenarios{display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.8rem}
+.ai-sc-btn{background:white;border:0.5px solid var(--rule);border-radius:4px;padding:0.4rem 0.7rem;font-family:'Noto Sans TC',sans-serif;font-size:0.75rem;color:var(--mid);cursor:pointer;transition:all 0.2s;text-align:left}
+.ai-sc-btn:hover,.ai-sc-btn.active{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.ai-result{background:white;border:0.5px solid var(--rule);border-radius:6px;padding:1rem;font-family:'Noto Sans TC',sans-serif;font-size:0.8rem;line-height:1.75;color:var(--ink);min-height:140px}
+.ai-row{display:flex;gap:0.5rem;margin-bottom:0.3rem;flex-wrap:wrap}
+.ai-tag{display:inline-block;font-family:'DM Mono',monospace;font-size:0.62rem;padding:0.15rem 0.5rem;border-radius:3px;background:var(--paper)}
+.ai-tag.type{background:#EEEDFE;color:#3C3489}
+.ai-tag.risk-low{background:#E1F5EE;color:#085041}
+.ai-tag.risk-mid{background:#FAEEDA;color:#633806}
+.ai-tag.risk-hi{background:#FAECE7;color:#993C1D}
+.ai-reply{background:var(--paper);border-radius:4px;padding:0.7rem 0.8rem;margin-top:0.5rem;font-size:0.82rem;line-height:1.7;color:var(--ink)}
+.ai-placeholder{color:var(--mid);font-size:0.82rem;display:flex;align-items:center;justify-content:center;height:100%;min-height:100px}
+
+/* QUIZ */
+.quiz-wrap{flex:1;display:flex;flex-direction:column;gap:0.8rem;justify-content:center}
+.quiz-q{background:white;border:0.5px solid var(--rule);border-radius:6px;padding:0.9rem 1rem}
+.quiz-q-text{font-family:'Noto Sans TC',sans-serif;font-size:0.88rem;color:var(--ink);margin:0 0 0.6rem;line-height:1.6}
+.quiz-btns{display:flex;gap:0.5rem}
+.quiz-btn{flex:1;padding:0.5rem;border:0.5px solid var(--rule);border-radius:4px;font-family:'Noto Sans TC',sans-serif;font-size:0.82rem;cursor:pointer;background:white;color:var(--mid);transition:all 0.2s;min-height:44px}
+.quiz-btn.yes.active{background:var(--accent2);color:white;border-color:var(--accent2)}
+.quiz-btn.no.active{background:var(--accent);color:white;border-color:var(--accent)}
+.quiz-result{display:none;background:white;border:0.5px solid var(--rule);border-radius:6px;padding:1.2rem;text-align:center}
+.quiz-result.show{display:block}
+.quiz-score-n{font-family:'DM Mono',monospace;font-size:2.5rem;font-weight:500;color:var(--accent)}
+.quiz-score-label{font-family:'Noto Sans TC',sans-serif;font-size:0.9rem;font-weight:500;color:var(--ink);margin:0.3rem 0}
+.quiz-score-desc{font-family:'Noto Sans TC',sans-serif;font-size:0.82rem;color:var(--mid);line-height:1.7}
+.quiz-reset{margin-top:0.8rem;background:var(--ink);color:var(--paper);border:none;border-radius:4px;padding:0.5rem 1.2rem;font-family:'Noto Sans TC',sans-serif;font-size:0.8rem;cursor:pointer;min-height:44px}
+
+/* PRINCIPLES */
+.principles{display:flex;flex-direction:column;gap:0.5rem;flex:1;justify-content:center}
+.pr-item{display:grid;grid-template-columns:2.5rem 1fr;gap:0.8rem;padding:0.7rem 0;border-bottom:0.5px solid var(--rule);align-items:start}
+.pr-item:last-child{border-bottom:none}
+.pr-n{font-family:'DM Mono',monospace;font-size:1.3rem;font-weight:500;color:rgba(15,15,15,0.07);line-height:1}
+.pr-title{font-family:'Noto Serif TC',serif;font-size:0.9rem;color:var(--ink);margin:0 0 0.2rem}
+.pr-desc{font-family:'Noto Sans TC',sans-serif;font-size:0.76rem;color:var(--mid);line-height:1.6;margin:0}
+
+/* NEXT STEPS */
+.next-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.6rem;flex:1;align-content:center}
+.next-card{background:rgba(247,244,239,0.12);border:0.5px solid rgba(247,244,239,0.2);border-radius:6px;padding:1rem}
+.next-step{font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.1em;color:rgba(247,244,239,0.4);margin-bottom:0.4rem}
+.next-title{font-family:'Noto Serif TC',serif;font-size:0.92rem;color:var(--paper);margin:0 0 0.4rem}
+.next-desc{font-family:'Noto Sans TC',sans-serif;font-size:0.77rem;color:rgba(247,244,239,0.65);line-height:1.6;margin:0}
+
+@media(max-width:680px){
+  .sl{padding:5rem 5vw 2rem}
+  .metrics{grid-template-columns:repeat(2,1fr)}
+  .grid2,.kb-grid,.bcp-grid,.next-grid{grid-template-columns:1fr}
+  .results-grid{grid-template-columns:1fr}
+  .nav-links{display:none}
+  .hamburger{display:flex}
+  .tl-num{font-size:1.2rem;min-width:36px}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="top-nav">
+  <span class="nav-brand">RAIN CHEN</span>
+  <div class="nav-links">
+    <a class="nav-link" onclick="goSlide(0)">封面</a>
+    <a class="nav-link" onclick="goSlide(1)">現場</a>
+    <a class="nav-link" onclick="goSlide(2)">時間軸</a>
+    <a class="nav-link" onclick="goSlide(3)">知識庫</a>
+    <a class="nav-link" onclick="goSlide(4)">BCP</a>
+    <a class="nav-link" onclick="goSlide(5)">成果</a>
+    <a class="nav-link" onclick="goSlide(6)">AI工具</a>
+    <a class="nav-link" onclick="goSlide(7)">痛點診斷</a>
+    <a class="nav-link" onclick="goSlide(8)">方法論</a>
+  </div>
+  <div class="hamburger" onclick="openMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <span class="mobile-menu-close" onclick="closeMenu()">✕ 關閉</span>
+  <div class="mobile-menu-item" onclick="goSlide(0);closeMenu()">封面</div>
+  <div class="mobile-menu-item" onclick="goSlide(1);closeMenu()">01 現場與根因</div>
+  <div class="mobile-menu-item" onclick="goSlide(2);closeMenu()">02 三個月執行</div>
+  <div class="mobile-menu-item" onclick="goSlide(3);closeMenu()">03 知識庫架構</div>
+  <div class="mobile-menu-item" onclick="goSlide(4);closeMenu()">04 BCP 機制</div>
+  <div class="mobile-menu-item" onclick="goSlide(5);closeMenu()">05 數據成果</div>
+  <div class="mobile-menu-item" onclick="goSlide(6);closeMenu()">06 AI 客訴分類</div>
+  <div class="mobile-menu-item" onclick="goSlide(7);closeMenu()">07 痛點診斷</div>
+  <div class="mobile-menu-item" onclick="goSlide(8);closeMenu()">08 方法論</div>
+</div>
+
+<div class="reveal">
+<div class="slides">
+
+<!-- COVER -->
+<section>
+<div class="sl dark" style="justify-content:space-between">
+  <div>
+    <p class="sl-eye">Rain Chen ／ 營運重建案例 2019–2021</p>
+    <h1 class="cover-h">不是<em>激勵士氣，</em><br>是重新<em>設計系統。</em></h1>
+    <p class="cover-sub">一個每天接不到電話、回不完信件、積壓 600 封客訴的客服中心，如何在 90 天內成為品牌信任支柱。</p>
+  </div>
+  <div>
+    <div class="metrics">
+      <div class="metric"><span class="metric-n">99%</span><span class="metric-l">電話接聽率</span></div>
+      <div class="metric"><span class="metric-n">100%</span><span class="metric-l">信件即時回覆</span></div>
+      <div class="metric"><span class="metric-n">4.8</span><span class="metric-l">Google 評分</span></div>
+      <div class="metric"><span class="metric-n">99.2%</span><span class="metric-l">人效利用率</span></div>
+    </div>
+    <p style="font-family:'DM Mono',monospace;font-size:0.62rem;letter-spacing:0.12em;color:rgba(247,244,239,0.2);text-align:right;margin-top:1rem">→ 右鍵 / 空白鍵翻頁</p>
+  </div>
+</div>
+</section>
+
+<!-- 01 現場+根因 -->
+<section>
+<div class="sl">
+  <p class="sl-eye">01 ／ 現場與根因</p>
+  <h2 class="sl-h">4/1 上班第一天，最早的信是 1 月的。</h2>
+  <div class="sl-body">
+    <div class="grid2">
+      <div class="card red"><span class="card-tag">現場狀況</span>
+        <p class="card-title">600 封積壓，系統性失靈</p>
+        <p class="card-desc">每月 200 封來信，3 個月零回覆。1,000 通/天來電，3–4 人接聽。後勤吃掉 50% 人力。</p>
+      </div>
+      <div class="card red"><span class="card-tag">根本問題</span>
+        <p class="card-title">知識靠記憶，工具脫離業務</p>
+        <p class="card-desc">無知識庫、跨系統聯繫單、話後作業繁瑣——不是人不努力，是流程讓人失敗。</p>
+      </div>
+    </div>
+    <div class="arrow-row">↓ 根因導致</div>
+    <div class="grid2">
+      <div class="card gold"><span class="card-tag">放大器</span>
+        <p class="card-title">人力嚴重失配</p>
+        <p class="card-desc">後勤 50%，一線 50%——結構設計錯誤，不是人數問題。</p>
+      </div>
+      <div class="card gold"><span class="card-tag">放大器</span>
+        <p class="card-title">多渠道惡性循環</p>
+        <p class="card-desc">答非所問 → 重覆來信 → 工作量翻倍 → 更少人力，無法終止。</p>
+      </div>
+    </div>
+    <div class="arrow-row">↓ 共同導致</div>
+    <div class="grid1">
+      <div class="card blue"><span class="card-tag">最終影響</span>
+        <p class="card-title">客服失能 + 合規風險 + 品牌崩塌（Google 2.8 分）</p>
+        <p class="card-desc">金流／物流／電子發票具法定時效，延誤即違規，客訴不斷，品牌每天都在流失信任。</p>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- 02 時間軸 -->
+<section>
+<div class="sl">
+  <p class="sl-eye">02 ／ 三個月執行</p>
+  <h2 class="sl-h">每一個月，做最關鍵的那一件事。</h2>
+  <div class="sl-body">
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-header" onclick="toggleTl(this)">
+          <div class="tl-num">M1</div>
+          <div class="tl-info">
+            <p class="tl-title">診斷與止血——在動手之前，先看清楚</p>
+            <p class="tl-focus">DIAGNOSE &amp; STABILISE</p>
+          </div>
+          <span class="tl-arrow">▼</span>
+        </div>
+        <div class="tl-body open">
+          <ul class="tl-list">
+            <li><strong>服務量 × 人力 × 工時全盤點</strong>——有數字才能說服，不憑感覺提案</li>
+            <li>發現後勤 50% 是流程設計問題，不是人懶</li>
+            <li>600 封積壓信件按法定時效優先序清理</li>
+            <li>知識庫建立計劃同步啟動，止血與建制並行</li>
+          </ul>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-header" onclick="toggleTl(this)">
+          <div class="tl-num">M2</div>
+          <div class="tl-info">
+            <p class="tl-title">建制與訓練——把個人能力變成組織能力</p>
+            <p class="tl-focus">BUILD &amp; TRAIN</p>
+          </div>
+          <span class="tl-arrow">▶</span>
+        </div>
+        <div class="tl-body">
+          <ul class="tl-list">
+            <li><strong>知識庫建成</strong>：3 父分類 → 20 子分類 → 250–300 問答，後成聊天機器人訓練素材</li>
+            <li>新舊人同步訓練，品質有標準可複製</li>
+            <li>QA 機制建立，錄音質檢 + 評分表 + 輔導閉環</li>
+            <li>跨部門 + 對外廠商流程優化提案</li>
+          </ul>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-header" onclick="toggleTl(this)">
+          <div class="tl-num">M3</div>
+          <div class="tl-info">
+            <p class="tl-title">自動化與永續——讓系統不依賴我也能運轉</p>
+            <p class="tl-focus">AUTOMATE &amp; SUSTAIN</p>
+          </div>
+          <span class="tl-arrow">▶</span>
+        </div>
+        <div class="tl-body">
+          <ul class="tl-list">
+            <li><strong>代理人機制</strong>：全員含主管無痛休假，組織不因任何人離開而停擺</li>
+            <li>小主管培訓，把「我知道怎麼做」複製到下一層</li>
+            <li>數據分析自動化，報表不再靠人工彙整</li>
+            <li>輔導方案自動化 + BCP 業務持續計劃正式落地</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- 03 知識庫 -->
+<section>
+<div class="sl">
+  <p class="sl-eye">03 ／ 知識庫架構</p>
+  <h2 class="sl-h">讓回答從「靠人記憶」變成「靠系統」。</h2>
+  <div class="sl-body">
+    <div class="kb-grid">
+      <div class="kb-tree">
+        <div class="kb-parent" onclick="toggleKb(this,'kb1')">金流服務 <span>▼</span></div>
+        <div class="kb-children open" id="kb1">
+          <span class="kb-child">付款失敗</span><span class="kb-child">退款處理</span><span class="kb-child">對帳查詢</span><span class="kb-child">手續費說明</span><span class="kb-child sp">▲ 大額異常</span><span class="kb-child rk">⚠ 詐騙申訴</span>
+        </div>
+        <div class="kb-parent" onclick="toggleKb(this,'kb2')">物流服務 <span>▶</span></div>
+        <div class="kb-children" id="kb2">
+          <span class="kb-child">配送狀態</span><span class="kb-child">地址變更</span><span class="kb-child">包裹遺失</span><span class="kb-child">退貨流程</span><span class="kb-child sp">▲ 超材異常</span><span class="kb-child rk">⚠ 貨損申訴</span>
+        </div>
+        <div class="kb-parent" onclick="toggleKb(this,'kb3')">電子發票 <span>▶</span></div>
+        <div class="kb-children" id="kb3">
+          <span class="kb-child">載具歸戶</span><span class="kb-child">發票作廢</span><span class="kb-child">中獎兌領</span><span class="kb-child">B2B統編</span><span class="kb-child sp">▲ 申報異常</span><span class="kb-child rk">⚠ 稽查應對</span>
+        </div>
+        <div style="display:flex;gap:0.8rem;margin-top:0.6rem;flex-wrap:wrap">
+          <span style="font-family:'Noto Sans TC',sans-serif;font-size:0.7rem;color:var(--mid)">▲ 特殊升級類型</span>
+          <span style="font-family:'Noto Sans TC',sans-serif;font-size:0.7rem;color:var(--mid)">⚠ 高風險類型</span>
+        </div>
+      </div>
+      <div class="kb-stats">
+        <div class="kb-stat"><div class="kb-stat-n">3</div><div class="kb-stat-l">父分類（金流 / 物流 / 電子發票）</div></div>
+        <div class="kb-stat"><div class="kb-stat-n">15–20</div><div class="kb-stat-l">子分類，含特殊升級與高風險標記</div></div>
+        <div class="kb-stat"><div class="kb-stat-n">250–300</div><div class="kb-stat-l">問答題，後成聊天機器人訓練素材</div></div>
+        <div class="kb-note">2019 年以 Excel + 函數關鍵字查找實現雛形。半年後公司導入聊天機器人，這份知識庫<strong>直接倒入訓練模型</strong>——結構設計對了，工具換代只是替換容器。</div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- 04 BCP -->
+<section>
+<div class="sl">
+  <p class="sl-eye">04 ／ BCP 業務持續計劃</p>
+  <h2 class="sl-h">任何人都可以消失，服務不能停。</h2>
+  <div class="sl-body">
+    <div class="bcp-grid">
+      <div class="bcp-card">
+        <span class="bcp-icon">🔄</span>
+        <p class="bcp-title">代理人機制</p>
+        <p class="bcp-desc">每個職位都有明確代理人，含主管層。任何人休假或離職，都有人能立即承接，不需要交接會議。</p>
+      </div>
+      <div class="bcp-card">
+        <span class="bcp-icon">📋</span>
+        <p class="bcp-title">SOP 文件化</p>
+        <p class="bcp-desc">所有工作流程文字化、圖表化。新人看文件就能上手，不靠口耳相傳，品質不因人而異。</p>
+      </div>
+      <div class="bcp-card">
+        <span class="bcp-icon">📊</span>
+        <p class="bcp-title">數據自動化</p>
+        <p class="bcp-desc">日週月報表自動產生，不靠人工彙整。異常數值自動標記，主管隨時掌握全貌。</p>
+      </div>
+      <div class="bcp-card">
+        <span class="bcp-icon">🎯</span>
+        <p class="bcp-title">輔導方案自動化</p>
+        <p class="bcp-desc">績效不達標的員工自動進入輔導流程，有標準評估與記錄，不靠主管臨機判斷。</p>
+      </div>
+      <div class="bcp-card">
+        <span class="bcp-icon">🛡️</span>
+        <p class="bcp-title">風險分級應對</p>
+        <p class="bcp-desc">客訴分為一般、升級、高風險三級，對應不同處理時效與授權層級，確保合規。</p>
+      </div>
+      <div class="bcp-card" style="background:#F7F4EF;border-color:var(--accent)">
+        <span class="bcp-icon">✅</span>
+        <p class="bcp-title">驗收標準</p>
+        <p class="bcp-desc">主管不在場一週，團隊服務品質不下降。這是 BCP 真正落地的唯一驗收標準。</p>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- 05 成果滑桿 -->
+<section>
+<div class="sl">
+  <p class="sl-eye">05 ／ 90 天成果</p>
+  <h2 class="sl-h">拖動時間軸，看見翻轉的過程。</h2>
+  <div class="sl-body">
+    <div class="slider-wrap">
+      <div class="slider-labels">
+        <span>整頓前（4月1日）</span>
+        <span id="slider-pct">50%</span>
+        <span>整頓後（第90天）</span>
+      </div>
+      <div class="slider-track">
+        <div class="slider-fill" id="sliderFill" style="width:50%"></div>
+        <input type="range" id="timeSlider" min="0" max="100" value="50" oninput="updateSlider(this.value)">
+      </div>
+      <div class="results-grid">
+        <div class="res-card">
+          <div class="res-before" id="r1before">起點 20%</div>
+          <div class="res-val" id="r1val">—</div>
+          <div class="res-label">電話接聽率</div>
+          <div class="res-detail" id="r1detail">1,000通/天，重組人力後近乎全接</div>
+        </div>
+        <div class="res-card">
+          <div class="res-before" id="r2before">600封積壓</div>
+          <div class="res-val" id="r2val">—</div>
+          <div class="res-label">信件即時回覆率</div>
+          <div class="res-detail" id="r2detail">第二個月起維持100%，此後從未低於此</div>
+        </div>
+        <div class="res-card">
+          <div class="res-before" id="r3before">起點 2.8 分</div>
+          <div class="res-val" id="r3val">—</div>
+          <div class="res-label">Google 評分</div>
+          <div class="res-detail" id="r3detail">從低風險邊緣回到消費者信任區間</div>
+        </div>
+        <div class="res-card">
+          <div class="res-before" id="r4before">後勤 50%：一線 50%</div>
+          <div class="res-val" id="r4val">—</div>
+          <div class="res-label">人效利用率</div>
+          <div class="res-detail" id="r4detail">後勤降至10%，一線提升至90%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- 06 AI工具 -->
+<section>
+<div class="sl">
+  <p class="sl-eye">06 ／ AI 客訴分類示範</p>
+  <h2 class="sl-h">以現在的 AI 能力，這件事可以這樣做。</h2>
+  <div class="sl-body">
+    <p style="font-family:'Noto Sans TC',sans-serif;font-size:0.8rem;color:var(--mid);margin:0 0 0.5rem">選擇一個真實情境，查看 AI 分類與建議回覆：</p>
+    <div class="ai-scenarios" id="aiScenarios"></div>
+    <div class="ai-result" id="aiResult">
+      <div class="ai-placeholder">← 點選上方任一情境查看分析結果</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- 07 痛點診斷 -->
+<section>
+<div class="sl">
+  <p class="sl-eye">07 ／ 痛點自我診斷</p>
+  <h2 class="sl-h">你的客服中心，現在健康嗎？</h2>
+  <div class="sl-body">
+    <div class="quiz-wrap" id="quizWrap"></div>
+    <div class="quiz-result" id="quizResult">
+      <div class="quiz-score-n" id="quizScore"></div>
+      <p class="quiz-score-label" id="quizLabel"></p>
+      <p class="quiz-score-desc" id="quizDesc"></p>
+      <button class="quiz-reset" onclick="resetQuiz()">重新診斷</button>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- 08 方法論 -->
+<section>
+<div class="sl">
+  <p class="sl-eye">08 ／ 可複製的方法論</p>
+  <h2 class="sl-h">這不只是一個案例，是一套決策邏輯。</h2>
+  <div class="sl-body">
+    <div class="principles">
+      <div class="pr-item"><div class="pr-n">01</div><div><p class="pr-title">先診斷，再行動——問題背後的問題才是關鍵</p><p class="pr-desc">所有執行層問題都有結構性根因。找到根因才能真正解決，否則只是打地鼠。</p></div></div>
+      <div class="pr-item"><div class="pr-n">02</div><div><p class="pr-title">用數字說話，不用感覺提案</p><p class="pr-desc">人力提報、流程優化、系統發包，每一步都有數據支撐，決策速度快、說服成本低。</p></div></div>
+      <div class="pr-item"><div class="pr-n">03</div><div><p class="pr-title">把個人能力轉化為組織能力</p><p class="pr-desc">知識庫、SOP、QA、代理人——每個設計的目標都是「主管離開也能運轉」。</p></div></div>
+      <div class="pr-item"><div class="pr-n">04</div><div><p class="pr-title">止血與建制並行，不等條件完美</p><p class="pr-desc">第一個月同時清積壓信件和啟動知識庫。等止血完再建制，永遠來不及。</p></div></div>
+      <div class="pr-item"><div class="pr-n">05</div><div><p class="pr-title">結構先於工具</p><p class="pr-desc">2019 年 Excel 知識庫半年後直接成為 AI 訓練素材。結構設計對了，工具換代只是替換容器。</p></div></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- 09 企業下一步 -->
+<section>
+<div class="sl blue">
+  <p class="sl-eye" style="color:rgba(247,244,239,0.35)">09 ／ 你的下一步</p>
+  <h2 class="sl-h" style="color:var(--paper);border-color:rgba(247,244,239,0.3)">如果這些問題，也發生在你的組織裡。</h2>
+  <div class="sl-body">
+    <div class="next-grid">
+      <div class="next-card">
+        <p class="next-step">STEP 01</p>
+        <p class="next-title">做一次系統性盤點</p>
+        <p class="next-desc">不是感覺哪裡有問題，而是用數據找出真正的瓶頸在哪一層。通常問題的根源，和你以為的不一樣。</p>
+      </div>
+      <div class="next-card">
+        <p class="next-step">STEP 02</p>
+        <p class="next-title">讓知識從人腦移到系統</p>
+        <p class="next-desc">只要有一個人離職就覺得很危險，代表知識還鎖在人身上。知識庫是一切改善的基礎。</p>
+      </div>
+      <div class="next-card">
+        <p class="next-step">STEP 03</p>
+        <p class="next-title">設計一個不依賴你的組織</p>
+        <p class="next-desc">最好的管理者，是讓團隊在沒有你的時候也能正常運轉。這才是真正的領導力。</p>
+      </div>
+    </div>
+    <div style="margin-top:1.5rem;padding:1rem 1.2rem;background:rgba(247,244,239,0.1);border-radius:6px;border:0.5px solid rgba(247,244,239,0.2)">
+      <p style="font-family:'Noto Serif TC',serif;font-size:1rem;color:var(--paper);margin:0 0 0.4rem">不論身處何處，都要讓那地方，變得比過去更好。</p>
+      <p style="font-family:'DM Mono',monospace;font-size:0.7rem;color:rgba(247,244,239,0.4);margin:0">729rain@gmail.com ／ 0988-582-843</p>
+    </div>
+  </div>
+</div>
+</section>
+
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.js"></script>
+<script>
+Reveal.initialize({hash:true,transition:'fade',transitionSpeed:'slow',progress:true,controls:true,center:false,width:'100%',height:'100%',margin:0,minScale:0.4,maxScale:2});
+
+function goSlide(n){Reveal.slide(n);closeMenu()}
+function openMenu(){document.getElementById('mobileMenu').classList.add('open')}
+function closeMenu(){document.getElementById('mobileMenu').classList.remove('open')}
+function toggleTl(h){const b=h.nextElementSibling;const arr=h.querySelector('.tl-arrow');const open=b.classList.contains('open');document.querySelectorAll('.tl-body').forEach(x=>x.classList.remove('open'));document.querySelectorAll('.tl-arrow').forEach(x=>x.textContent='▶');if(!open){b.classList.add('open');arr.textContent='▼'}}
+function toggleKb(el,id){const c=document.getElementById(id);const open=c.classList.contains('open');c.classList.toggle('open');el.querySelector('span').textContent=open?'▶':'▼'}
+
+// SLIDER
+const before={r1:'20%',r2:'積壓 600 封',r3:'2.8 分',r4:'失能'};
+const after={r1:'99%',r2:'100%',r3:'4.8 分',r4:'99.2%'};
+function lerp(a,b,t){return Math.round(a+(b-a)*t)}
+function updateSlider(v){
+  const t=v/100;
+  document.getElementById('sliderFill').style.width=v+'%';
+  document.getElementById('slider-pct').textContent=v+'%';
+  document.getElementById('r1val').textContent=t<0.1?before.r1:t>0.9?after.r1:lerp(20,99,t)+'%';
+  document.getElementById('r2val').textContent=t<0.1?before.r2:t>0.9?after.r2:lerp(10,100,t)+'%';
+  document.getElementById('r3val').textContent=t<0.1?before.r3:t>0.9?after.r3:(2.8+(4.8-2.8)*t).toFixed(1)+'分';
+  document.getElementById('r4val').textContent=t<0.1?before.r4:t>0.9?after.r4:lerp(20,99,t)+'%';
+  ['r1detail','r2detail','r3detail','r4detail'].forEach(id=>{document.getElementById(id).style.opacity=t>0.85?'1':'0'});
+}
+updateSlider(50);
+
+// AI SCENARIOS
+const scenarios=[
+  {label:'付款成功但訂單未付款',type:'金流',sub:'付款狀態異常',emotion:'中',risk:'一般',reply:'您好，非常抱歉造成您的困擾。付款與訂單系統有時會有短暫延遲，建議您保留付款成功截圖，我們將在 30 分鐘內為您確認訂單狀態並回覆結果，請稍候。'},
+  {label:'退款一週未到帳',type:'金流',sub:'退款延遲',emotion:'高',risk:'升級',reply:'您好，深感抱歉讓您等候這麼久。退款流程通常需 3–7 個工作天，若已超過此時限，我們將立即協助您向金流方確認狀態，並在今日內提供進度回報，請提供您的訂單編號以便查詢。'},
+  {label:'帳號疑似被盜刷',type:'金流',sub:'帳號安全',emotion:'高',risk:'高風險',reply:'您好，我們非常重視帳號安全問題。請您立即至設定頁面變更密碼並解除所有已授權裝置，我們同步為您凍結可疑交易。本案已提升至資安處理程序，專員將於 1 小時內與您聯繫，請保持電話暢通。'},
+  {label:'包裹顯示送達但沒收到',type:'物流',sub:'包裹遺失',emotion:'高',risk:'升級',reply:'您好，很抱歉發生這樣的困擾。系統顯示送達但您未收到，可能為誤投或他人代收。請先確認住家門口、信箱及管理員處，同時我們將向物流商調閱送達照片，預計 24 小時內提供查核結果。'},
+  {label:'地址寫錯想改但貨已出',type:'物流',sub:'地址變更',emotion:'中',risk:'一般',reply:'您好，瞭解您的需求。貨物已出庫後地址變更需直接與物流商協調，請提供您的訂單編號，我們立即幫您聯繫攔截並確認能否修改配送地址，操作結果將於 2 小時內通知您。'},
+  {label:'包裹外箱破損',type:'物流',sub:'貨損申訴',emotion:'中',risk:'升級',reply:'您好，非常抱歉您收到受損的包裹。請務必先拍攝外箱破損照片及內容物現狀（開箱過程若能錄影更佳），作為後續理賠依據。請提供訂單編號，我們將協助您申請貨損理賠，處理時效約 3 個工作天。'},
+  {label:'電子發票沒收到信件',type:'電子發票',sub:'發票補寄',emotion:'低',risk:'一般',reply:'您好，電子發票通知信有時可能進入垃圾信件匣，建議您先行確認。若確認未收到，請提供訂單編號及您的電子信箱，我們將立即為您重新寄送發票通知，通常 30 分鐘內可收到。'},
+  {label:'發票金額開錯已申報',type:'電子發票',sub:'發票作廢申報',emotion:'高',risk:'升級',reply:'您好，發票金額錯誤且已申報確實需要謹慎處理。依稅法規定需申請作廢並重開，請提供發票號碼及正確金額，我們的財會專員將在今日內與您確認作廢及補開流程，確保您的申報資料正確無誤。'},
+  {label:'中獎發票不知能否兌領',type:'電子發票',sub:'中獎兌領',emotion:'低',risk:'一般',reply:'您好，恭喜您的發票中獎！電子發票中獎後可至超商或郵局兌領，兌領期限通常為開獎後 6 個月內。若使用載具歸戶，獎金將由財政部自動匯入您的帳戶，無需親自兌領。請問您需要我協助確認您的發票歸戶狀態嗎？'},
+  {label:'統一編號打錯系統不讓改',type:'電子發票',sub:'統編變更',emotion:'中',risk:'升級',reply:'您好，電子發票一旦開立後依法不能直接修改統一編號，需要申請作廢後重開。請提供您的訂單編號、正確統一編號及公司抬頭，我們將協助您在今日內完成作廢及重開流程，並確認新發票寄送至您指定的電子信箱。'},
+];
+
+const container=document.getElementById('aiScenarios');
+const result=document.getElementById('aiResult');
+scenarios.forEach((s,i)=>{
+  const btn=document.createElement('button');
+  btn.className='ai-sc-btn';btn.textContent=s.label;
+  btn.onclick=()=>{
+    document.querySelectorAll('.ai-sc-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const riskClass=s.risk==='高風險'?'risk-hi':s.risk==='升級'?'risk-mid':'risk-low';
+    result.innerHTML=`<div class="ai-row"><span class="ai-tag type">${s.type}</span><span class="ai-tag type">${s.sub}</span><span class="ai-tag ${riskClass}">${s.risk}</span></div><div class="ai-row"><span class="ai-tag">情緒：${s.emotion}</span></div><div class="ai-reply">💬 建議回覆<br><br>${s.reply}</div>`;
+  };
+  container.appendChild(btn);
+});
+
+// QUIZ
+const questions=[
+  '客服團隊是否有完整的標準化知識庫（新人查文件就能回答問題）？',
+  '信件是否能在 24 小時內全數回覆，無積壓？',
+  '主管或關鍵人員休假時，服務品質是否不受影響？',
+  '你知道團隊每天有多少 % 的人力花在後勤文書作業上嗎？',
+  '客訴發生時，團隊能在 30 分鐘內找到根本原因並提出處理方案嗎？',
+];
+const answers=new Array(5).fill(null);
+function renderQuiz(){
+  const wrap=document.getElementById('quizWrap');
+  wrap.innerHTML='';
+  questions.forEach((q,i)=>{
+    const div=document.createElement('div');div.className='quiz-q';
+    div.innerHTML=`<p class="quiz-q-text">${i+1}. ${q}</p><div class="quiz-btns"><button class="quiz-btn yes${answers[i]===true?' active':''}" onclick="setAns(${i},true)">是</button><button class="quiz-btn no${answers[i]===false?' active':''}" onclick="setAns(${i},false)">否</button></div>`;
+    wrap.appendChild(div);
+  });
+  const allAnswered=answers.every(a=>a!==null);
+  if(allAnswered){
+    const score=answers.filter(a=>a===true).length;
+    document.getElementById('quizScore').textContent=score+'/5';
+    document.getElementById('quizLabel').textContent=score>=4?'客服體系相對健康':score>=2?'有隱憂，需要檢視':'需要系統性重建';
+    document.getElementById('quizDesc').textContent=score>=4?'你的團隊有一定的系統基礎。若想進一步提升效能，可以從數據自動化與人才培育著手。':score>=2?'部分基礎已建立，但仍有明顯的斷點。建議優先從知識庫和代理人機制開始補強，避免關鍵人離職時服務崩潰。':'從根本上重新設計你的客服體系，這件事的投報率遠高於你想像。先做盤點，再決定優先序——這是最快的路徑。';
+    document.getElementById('quizResult').classList.add('show');
+    wrap.style.display='none';
+  }
+}
+function setAns(i,v){answers[i]=v;renderQuiz()}
+function resetQuiz(){answers.fill(null);document.getElementById('quizResult').classList.remove('show');document.getElementById('quizWrap').style.display='';renderQuiz()}
+renderQuiz();
+</script>
+</body>
+</html>
